@@ -1,0 +1,199 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_winBuildVS20153_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_winBuildVS20153_name": {
+            "defaultValue": "winBuildVS20153",
+            "type": "String"
+        },
+        "networkInterfaces_winbuildvs20153785_name": {
+            "defaultValue": "winbuildvs20153785",
+            "type": "String"
+        },
+        "networkSecurityGroups_winBuildVS20153_nsg_name": {
+            "defaultValue": "winBuildVS20153-nsg",
+            "type": "String"
+        },
+        "publicIPAddresses_winBuildVS20153_ip_name": {
+            "defaultValue": "winBuildVS20153-ip",
+            "type": "String"
+        },
+        "storageAccounts_privatebuildwindiag992_name": {
+            "defaultValue": "privatebuildwindiag992",
+            "type": "String"
+        },
+        "storageAccounts_privatebuildwindisks717_name": {
+            "defaultValue": "privatebuildwindisks717",
+            "type": "String"
+        },
+        "networkInterfaces_winbuildvs20153785_id": {
+            "defaultValue": "/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/vm/providers/Microsoft.Network/virtualNetworks/vm/subnets/default",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privateBuildWin/providers/Microsoft.Compute/virtualMachines/winBuildVS20153'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_winBuildVS20153_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "northeurope",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftVisualStudio",
+                        "offer": "VisualStudio",
+                        "sku": "VS-2015-Comm-VSU3-AzureSDK-29-Win10-N",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_winBuildVS20153_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_privatebuildwindisks717_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_winBuildVS20153_name'),'20170103131010.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_winBuildVS20153_name')]",
+                    "adminUsername": "dmxonazure",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_winBuildVS20153_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_winbuildvs20153785_name'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_privatebuildwindisks717_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_winbuildvs20153785_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privateBuildWin/providers/Microsoft.Network/networkInterfaces/winbuildvs20153785'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_winbuildvs20153785_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.0.7",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_winBuildVS20153_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[parameters('networkInterfaces_winbuildvs20153785_id')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_winBuildVS20153_nsg_name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_winBuildVS20153_ip_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_winBuildVS20153_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privateBuildWin/providers/Microsoft.Network/networkSecurityGroups/winBuildVS20153-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_winBuildVS20153_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privateBuildWin/providers/Microsoft.Network/publicIPAddresses/winBuildVS20153-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_winBuildVS20153_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privatebuildwin/providers/Microsoft.Storage/storageAccounts/privatebuildwindiag992'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_privatebuildwindiag992_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "northeurope",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/81c5c77b-31e5-47ef-9d27-fc34dd9e7f09/resourceGroups/privatebuildwin/providers/Microsoft.Storage/storageAccounts/privatebuildwindisks717'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_privatebuildwindisks717_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "northeurope",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        }
+    ]
+}
